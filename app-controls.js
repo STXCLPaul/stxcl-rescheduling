@@ -27,7 +27,7 @@ async function changeComplex(prefix,preferredField) {
  try{
    let fields=facilityData.find(x=>x.complex===complex)?.fields;
    if(!fields || !fields.length){
-     fields=await call('getFieldsForComplex',complex);
+     fields=await call('getFacilityOptions',complex);
      const item=facilityData.find(x=>x.complex===complex);
      if(item)item.fields=fields;
    }
