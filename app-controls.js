@@ -1,10 +1,11 @@
 function certHtml(prefix){const container=$(prefix+'Certs');container.replaceChildren();
- const items=[['field','I certify that I have verified and confirmed the requested field is available for the proposed date and time.'],
+ const items=[['authority','I certify that I am authorized to act on behalf of my club/team in the rescheduling process.'],
+  ['field','I certify that I have verified and confirmed the requested field is available for the proposed date and time.'],
   ['referee','I certify that, if the proposed date/time is outside STXCL standard play dates and/or the requested field is not at an STXCL-controlled facility, I have contacted the local referee assignor and verified that referee coverage is feasible.'],
   ['finality','I acknowledge that once both clubs agree and the request is submitted to STXCL, the request is final between the clubs. Subsequent changes must be made through the Game Change Request (GCR) process, with all applicable fees.'],
   ['disclaimer','I understand that club agreement and submission do not constitute STXCL approval. All requests remain subject to league review, applicable rescheduling policies, field availability, and referee coverage. STXCL reserves the right to deny or modify any request.']];
  items.forEach(([key,text])=>{const label=el('label','');label.className='cert';const input=document.createElement('input');input.type='checkbox';input.id=prefix+'_'+key;label.append(input,el('span',text));container.append(label);});}
-function certs(prefix){return {field:$(prefix+'_field').checked,referee:$(prefix+'_referee').checked,finality:$(prefix+'_finality').checked,disclaimer:$(prefix+'_disclaimer').checked};}
+function certs(prefix){return {authority:$(prefix+'_authority').checked,field:$(prefix+'_field').checked,referee:$(prefix+'_referee').checked,finality:$(prefix+'_finality').checked,disclaimer:$(prefix+'_disclaimer').checked};}
 function timeOptions(id){const s=$(id);s.replaceChildren(new Option('Select time',''));
  for(let min=7*60;min<=21*60+30;min+=15){const h=Math.floor(min/60),m=min%60,ampm=h<12?'AM':'PM',display=(h%12||12)+':'+String(m).padStart(2,'0')+' '+ampm;s.add(new Option(display,display));}}
 function fillComplex(id){const s=$(id);s.replaceChildren(new Option('Select complex',''));
