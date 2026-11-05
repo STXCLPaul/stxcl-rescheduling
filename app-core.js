@@ -1,8 +1,8 @@
 
 const query = new URLSearchParams(location.search);
-const RID = query.get('rid')||'';
-const TOKEN = query.get('token')||'';
-if(RID&&TOKEN)history.replaceState(null,'',location.pathname);
+const RID = query.get('rid')||history.state?.rid||'';
+const TOKEN = query.get('token')||history.state?.token||'';
+if(RID&&TOKEN)history.replaceState({rid:RID,token:TOKEN},'',location.pathname);
 let gameData=null,reviewData=null,facilityData=[];
 const $=id=>document.getElementById(id);
 function error(msg){$('error').textContent=String(msg);$('error').classList.remove('hidden');$('ok').classList.add('hidden');window.scrollTo(0,0);}
