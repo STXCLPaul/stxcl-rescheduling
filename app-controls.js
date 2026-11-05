@@ -1,11 +1,25 @@
-function certHtml(prefix){const container=$(prefix+'Certs');container.replaceChildren();
- const items=[['authority','I certify that I am authorized to act on behalf of my club/team in the rescheduling process.'],
-  ['field','I certify that I have verified and confirmed the requested field is available for the proposed date and time.'],
-  ['referee','I certify that, if the proposed date/time is outside STXCL standard play dates and/or the requested field is not at an STXCL-controlled facility, I have contacted the local referee assignor and verified that referee coverage is feasible.'],
-  ['finality','I acknowledge that once both clubs agree and the request is submitted to STXCL, the request is final between the clubs. Subsequent changes must be made through the Game Change Request (GCR) process, with all applicable fees.'],
-  ['disclaimer','I understand that club agreement and submission do not constitute STXCL approval. All requests remain subject to league review, applicable rescheduling policies, field availability, and referee coverage. STXCL reserves the right to deny or modify any request.']];
- items.forEach(([key,text])=>{const label=el('label','');label.className='cert';const input=document.createElement('input');input.type='checkbox';input.id=prefix+'_'+key;label.append(input,el('span',text));container.append(label);});}
-function certs(prefix){return {authority:$(prefix+'_authority').checked,field:$(prefix+'_field').checked,referee:$(prefix+'_referee').checked,finality:$(prefix+'_finality').checked,disclaimer:$(prefix+'_disclaimer').checked};}
+function certHtml(prefix){
+ const container=$(prefix+'Certs');container.replaceChildren();
+ const terms=[
+  'I am authorized to act on behalf of my club/team in this rescheduling process.',
+  'I have verified and confirmed that the proposed field is available for the requested date and time.',
+  'If the proposed game falls outside STXCL standard play dates and/or uses a facility not controlled by STXCL, I have contacted the local referee assignor and verified that referee coverage is feasible.',
+  'I understand that I am fully responsible for reviewing my team’s schedule and verifying that the proposed change does not create a scheduling conflict or violate any league rule. If a conflict or rules violation results from this request, I understand that I will be required to use the Game Change Request (GCR) process to reschedule, including all applicable fees.',
+  'Once both clubs agree and the request is submitted to STXCL, the agreement is final between the clubs. Any later change must use the GCR process and is subject to applicable fees.',
+  'Agreement between clubs does not constitute STXCL approval. Every request remains subject to league review, applicable policies, field availability, and referee coverage; STXCL may deny or modify the request.'
+ ];
+ const list=document.createElement('ul');
+ terms.forEach(term=>{const li=document.createElement('li');li.textContent=term;list.append(li);});
+ container.append(list);
+ const label=document.createElement('label');label.className='cert';
+ const input=document.createElement('input');input.type='checkbox';input.id=prefix+'_all';
+ const span=el('span','I have read, understand, and certify all of the statements above.');
+ label.append(input,span);container.append(label);
+}
+function certs(prefix){
+ const accepted=$(prefix+'_all').checked;
+ return {authority:accepted,field:accepted,referee:accepted,finality:accepted,disclaimer:accepted,scheduleResponsibility:accepted};
+}
 function timeOptions(id){const s=$(id);s.replaceChildren(new Option('Select time',''));
  for(let min=7*60;min<=21*60+30;min+=15){const h=Math.floor(min/60),m=min%60,ampm=h<12?'AM':'PM',display=(h%12||12)+':'+String(m).padStart(2,'0')+' '+ampm;s.add(new Option(display,display));}}
 function fillComplex(id){const s=$(id);s.replaceChildren(new Option('Select complex',''));
