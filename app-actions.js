@@ -1,5 +1,5 @@
 async function lookup(){clearStatus();try{gameData=await call('findGame',$('game').value);renderGame($('gameDetails'),gameData);
- const d=toIso(gameData.date);setProposal('',{date:d,time:gameData.time,complex:gameData.complex,field:gameData.field});}
+ const d=toIso(gameData.date);await setProposal('',{date:d,time:gameData.time,complex:gameData.complex,field:gameData.field});}
  catch(e){gameData=null;$('gameDetails').classList.add('hidden');error(e.message);}}
 function toIso(d){const m=String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);return m?m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0'):'';}
 async function submitInitial(){clearStatus();if(!gameData){error('Look up the game number before submitting.');return;}
@@ -9,7 +9,7 @@ async function submitInitial(){clearStatus();if(!gameData){error('Look up the ga
  try{const r=await call('submitRequest',data);$('initial').classList.add('hidden');success('Request '+r.id+' submitted. Status: '+r.status+'. No schedule changes have been made.');}
  catch(e){error(e.message);}}
 async function loadReview(){try{reviewData=await call('getReview',RID,TOKEN);$('reviewMeta').textContent='Request '+reviewData.id+' | '+reviewData.status+' | You are reviewing as '+reviewData.actorEmail;
- renderGame($('reviewGame'),reviewData.game);setProposal('review',reviewData.proposal);}
+ renderGame($('reviewGame'),reviewData.game);await setProposal('review',reviewData.proposal);}
  catch(e){$('review').classList.add('hidden');error(e.message);}}
 async function reviewAction(action){clearStatus();if(!reviewData)return;
  if(action==='REJECT'){if(!confirm('Reject and close this rescheduling request?'))return;}
