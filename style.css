@@ -1,0 +1,15 @@
+
+:root{font-family:Arial,Helvetica,sans-serif;color:#172b3a;background:#f4f7fa}*{box-sizing:border-box}
+body{margin:0}header{background:#133750;color:#fff;padding:24px max(20px,calc((100vw - 900px)/2))}
+header h1{font-size:24px;margin:0 0 6px}header p{margin:0;color:#cfdfeb;font-size:14px}
+main{max-width:900px;margin:24px auto 60px;padding:0 16px}.panel{background:white;border:1px solid #dae4ec;border-radius:12px;padding:22px;margin:18px 0;box-shadow:0 2px 9px #19334d0a}
+h2{margin:0 0 14px;font-size:19px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+label{display:block;font-weight:600;font-size:13px;margin:12px 0 5px}input,select{border:1px solid #b9c9d6;border-radius:7px;width:100%;padding:10px;font:inherit;background:white;color:#162a3c}
+input:focus,select:focus{outline:2px solid #4b9dc9;outline-offset:1px}
+button{cursor:pointer;border:0;border-radius:7px;padding:11px 18px;font:inherit;font-weight:bold;background:#176392;color:white}button:disabled{opacity:.4;cursor:not-allowed}
+button.secondary{background:#e7f0f6;color:#194462}button.danger{background:#a93636}button.outline{border:1px solid #bed3e1;background:white;color:#16577b}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.muted{font-size:13px;color:#5a7080}.note{font-size:13px;background:#edf5f9;padding:12px;border-radius:8px}.error{color:#9f2525;background:#fff0f0;border:1px solid #f0c9c9;padding:12px;border-radius:8px}.success{color:#1b623d;background:#eff9f2;border:1px solid #b9e6c7;padding:12px;border-radius:8px}.hidden{display:none!important}
+.details{display:grid;grid-template-columns:160px 1fr;gap:8px;font-size:14px}.details span:nth-child(odd){color:#526a7a}.details span:nth-child(even){font-weight:600;overflow-wrap:anywhere}
+.cert{display:flex;align-items:flex-start;gap:10px;margin:15px 0;line-height:1.5;font-weight:normal;font-size:14px}.cert input{width:auto;margin-top:4px}
+#busy{position:fixed;inset:0;background:#ffffffb8;display:none;align-items:center;justify-content:center;z-index:5;font-size:20px;font-weight:bold}#busy.show{display:flex}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.details{grid-template-columns:110px 1fr}header{padding:20px}main{margin-top:12px}.panel{padding:16px}}
