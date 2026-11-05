@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html><head><meta name="referrer" content="no-referrer"><meta charset="utf-8">
+<link rel="stylesheet" href="style.css"></head>
+<body><header><h1>STXCL Rescheduling Request</h1><p>Club-to-club agreement portal • Submission does not change the game schedule</p></header>
+<div id="busy">Processing…</div><main>
+<div id="error" class="error hidden" role="alert"></div><div id="ok" class="success hidden" role="status"></div>
+<section id="initial">
+ <div class="panel"><h2>1. Requesting club representative</h2>
+  <div class="grid"><div><label for="name">Full name *</label><input id="name" autocomplete="name"></div>
+  <div><label for="club">Club *</label><input id="club"></div>
+  <div><label for="role">Role *</label><select id="role"><option value="">Select role</option><option>Coach</option><option>Team Manager</option><option>Club Administrator</option><option>Other</option></select></div>
+  <div><label for="email">Your email *</label><input id="email" type="email" autocomplete="email"></div></div></div>
+ <div class="panel"><h2>2. Identify the existing game</h2>
+   <div class="grid"><div><label for="game">Game number *</label><input id="game" inputmode="numeric" placeholder="Game #"></div>
+   <div style="align-self:end"><button type="button" onclick="lookup()">Look up game</button></div></div>
+   <p class="muted">Game details are retrieved from the live STXCL EXPORT sheet. No changes are made to that sheet.</p>
+   <div id="gameDetails" class="details hidden"></div></div>
+ <div class="panel"><h2>3. Proposed new schedule</h2><div class="grid">
+   <div><label for="date">Proposed date *</label><input id="date" type="date"></div>
+   <div><label for="time">Proposed time *</label><select id="time"></select></div>
+   <div><label for="complex">Proposed complex *</label><select id="complex" onchange="changeComplex('')"></select></div>
+   <div><label for="field">Proposed field *</label><select id="field"></select></div>
+   <div id="otherComplexWrap" class="hidden"><label for="otherComplex">New complex name *</label><input id="otherComplex"></div>
+   <div id="otherFieldWrap" class="hidden"><label for="otherField">Field at new complex *</label><input id="otherField"></div>
+   </div><p class="muted">Complexes and fields are read from the live Field Matrix. "Other" allows a new complex or field.</p></div>
+ <div class="panel"><h2>4. Opposing club approval recipients</h2>
+  <label for="opponents">Email addresses (one or more) *</label>
+  <input id="opponents" placeholder="manager@club.com, coach@club.com">
+  <p class="muted">Separate multiple addresses with commas or semicolons. Each receives a separate approval link; the first response determines the opposing club's action.</p></div>
+ <div class="panel"><h2>5. Certifications & acknowledgments</h2><div id="initialCerts"></div>
+  <div class="actions"><button type="button" onclick="submitInitial()">Send to opposing club</button></div>
+  <p class="muted">Your request is not forwarded to STXCL until both clubs agree.</p></div>
+</section>
+<section id="review" class="hidden">
+ <div class="panel"><h2>Opposing club / requestor review</h2><p id="reviewMeta" class="note"></p>
+  <h2>Current game (locked)</h2><div id="reviewGame" class="details"></div></div>
+ <div class="panel"><h2>Proposed schedule</h2><p class="muted">Only the following four values may change in a counterproposal.</p>
+  <div class="grid"><div><label for="reviewDate">Date</label><input id="reviewDate" type="date"></div>
+  <div><label for="reviewTime">Time</label><select id="reviewTime"></select></div>
+  <div><label for="reviewComplex">Complex</label><select id="reviewComplex" onchange="changeComplex('review')"></select></div>
+  <div><label for="reviewField">Field</label><select id="reviewField"></select></div>
+  <div id="reviewOtherComplexWrap" class="hidden"><label for="reviewOtherComplex">Other complex</label><input id="reviewOtherComplex"></div>
+  <div id="reviewOtherFieldWrap" class="hidden"><label for="reviewOtherField">Other field</label><input id="reviewOtherField"></div></div></div>
+ <div class="panel"><h2>Required certifications</h2><div id="reviewCerts"></div>
+  <p class="muted">Required for approval and again for any counterproposal. All agreement is subject to STXCL review.</p>
+  <div class="actions"><button onclick="reviewAction('APPROVE')">Approve proposal</button><button class="secondary" onclick="reviewAction('COUNTER')">Send counterproposal</button><button class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
+</section>
+</main>
+<script src="app-core.js"></script><script src="app-form.js"></script><script src="app-actions.js"></script></body></html>
