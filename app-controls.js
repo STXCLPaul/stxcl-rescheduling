@@ -9,16 +9,44 @@ function timeOptions(id){const s=$(id);s.replaceChildren(new Option('Select time
  for(let min=7*60;min<=21*60+30;min+=15){const h=Math.floor(min/60),m=min%60,ampm=h<12?'AM':'PM',display=(h%12||12)+':'+String(m).padStart(2,'0')+' '+ampm;s.add(new Option(display,display));}}
 function fillComplex(id){const s=$(id);s.replaceChildren(new Option('Select complex',''));
  facilityData.forEach(c=>s.add(new Option(c.complex,c.complex)));s.add(new Option('Other — enter a new complex','__OTHER__'));}
-function changeComplex(prefix,preferredField){const cid=prefix? 'reviewComplex':'complex';const fid=prefix?'reviewField':'field';
- const value=$(cid).value;const other=value==='__OTHER__';
- $(prefix? 'reviewOtherComplexWrap':'otherComplexWrap').classList.toggle('hidden',!other);
- $(prefix? 'reviewOtherFieldWrap':'otherFieldWrap').classList.toggle('hidden',!other);
- const fs=$(fid);fs.replaceChildren(new Option('Select field',''));
- if(!other){const match=facilityData.find(x=>x.complex===value);(match?.fields||[]).forEach(x=>fs.add(new Option(x,x)));
- fs.add(new Option('Other — enter a field','__OTHER__'));}
- else fs.add(new Option('Other — enter a field','__OTHER__'));
- if(preferredField){const match=[...fs.options].find(o=>o.value===preferredField);fs.value=match?preferredField:'__OTHER__';}
- if(!other){const otherField=prefix?'reviewOtherFieldWrap':'otherFieldWrap';
- $(otherField).classList.toggle('hidden',fs.value==='__OTHER__');}
- fs.onchange=()=>{$(prefix?'reviewOtherFieldWrap':'otherFieldWrap').classList.toggle('hidden',fs.value!=='__OTHER__');};
+async function changeComplex(prefix,preferredField) {
+ const cid=prefix?'reviewComplex':'complex',fid=prefix?'reviewField':'field';
+ const otherWrap=prefix?'reviewOtherComplexWrap':'otherComplexWrap';
+ const fieldWrap=prefix?'reviewOtherFieldWrap':'otherFieldWrap';
+ const otherInput=prefix?'reviewOtherField':'otherField';
+ const complex=$(cid).value,other=complex==='__OTHER__';
+ $(otherWrap).classList.toggle('hidden',!other);
+ const fs=$(fid);
+ fs.replaceChildren(new Option(other?'Other — enter a field':'Select field',other?'__OTHER__':''));
+ fs.disabled=!other && !complex;
+ $(fieldWrap).classList.toggle('hidden',!other);
+ if(other) {fs.disabled=false;return;}
+ if(!complex)return;
+ fs.disabled=true;
+ fs.replaceChildren(new Option('Loading fields...',''));
+ try{
+   let fields=facilityData.find(x=>x.complex===complex)?.fields;
+   if(!fields || !fields.length){
+     fields=await call('getFieldsForComplex',complex);
+     const item=facilityData.find(x=>x.complex===complex);
+     if(item)item.fields=fields;
+   }
+   if($(cid).value!==complex)return;
+   fs.replaceChildren(new Option('Select field',''));
+   (fields||[]).forEach(x=>fs.add(new Option(x,x)));
+   fs.add(new Option('Other — enter a field','__OTHER__'));
+   fs.disabled=false;
+   if(preferredField){
+     fs.value=[...fs.options].some(o=>o.value===preferredField)?preferredField:'__OTHER__';
+     if(fs.value==='__OTHER__')$(otherInput).value=preferredField;
+   }
+   $(fieldWrap).classList.toggle('hidden',fs.value!=='__OTHER__');
+   fs.onchange=()=>$(fieldWrap).classList.toggle('hidden',fs.value!=='__OTHER__');
+ }catch(e){
+   if($(cid).value===complex){
+     fs.replaceChildren(new Option('Fields unavailable',''));
+     fs.disabled=true;
+     error('Unable to load fields for '+complex+': '+e.message);
+   }
+ }
 }
