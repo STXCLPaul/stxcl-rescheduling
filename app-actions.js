@@ -11,7 +11,17 @@ async function submitInitial(){clearStatus();if(!gameData){error('Look up the ga
 async function loadReview(){try{reviewData=await call('getReview',RID,TOKEN);$('reviewMeta').textContent='Request '+reviewData.id+' | '+reviewData.status+' | You are reviewing as '+reviewData.actorEmail;
  renderGame($('reviewGame'),reviewData.game);await setProposal('review',reviewData.proposal);}
  catch(e){$('review').classList.add('hidden');error(e.message);}}
+function proposalChangedFromReceived(){
+ if(!reviewData)return false;
+ const original=reviewData.proposal;
+ const current=proposal('review');
+ return ['date','time','complex','field'].some(key=>String(current[key]??'').trim()!==String(original[key]??'').trim());
+}
 async function reviewAction(action){clearStatus();if(!reviewData)return;
+ if(action==='APPROVE'&&proposalChangedFromReceived()){
+  error('You have modified the proposed schedule. Approval is only possible without changes. To submit your modifications, select "Send counterproposal," or restore the original values to approve the existing proposal.');
+  return;
+ }
  if(action==='REJECT'){if(!confirm('Reject and close this rescheduling request?'))return;}
  else if(!confirm(action==='APPROVE'?'Approve this exact proposal and forward it to STXCL for review?':'Send these four proposed scheduling values back to the other club?'))return;
  try{const out=await call('actOnRequest',{id:RID,token:TOKEN,action,proposal:action==='COUNTER'?proposal('review'):null,certs:certs('review')});
