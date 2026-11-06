@@ -27,7 +27,7 @@ async function reviewAction(action){clearStatus();if(!reviewData)return;
  }
  if(action==='REJECT'){if(!confirm('Reject and close this rescheduling request?'))return;}
  else if(!confirm(action==='APPROVE'?'Approve this exact proposal and forward it to STXCL for review?':'Send these four proposed scheduling values back to the other club?'))return;
- try{const out=await call('actOnRequest',{id:RID,token:TOKEN,action,representativeName,representativeRole,proposal:action==='COUNTER'?proposal('review'):null,certs:certs('review')});
+ try{const out=await call('actOnRequest',{id:RID,token:TOKEN,action,representativeName,representativeRole,proposal:action==='REJECT'?null:proposal('review'),certs:certs('review')});
  $('review').classList.add('hidden');success('Request '+out.id+' updated: '+out.status+'. This link is now closed.');}
  catch(e){error(e.message);}}
 async function init(){certHtml('initial');certHtml('review');timeOptions('time');timeOptions('reviewTime');
