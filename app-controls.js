@@ -11,6 +11,10 @@ function certHtml(prefix){
  const list=document.createElement('ul');
  terms.forEach(term=>{const li=document.createElement('li');li.textContent=term;list.append(li);});
  container.append(list);
+ const rainoutLabel=document.createElement('label');rainoutLabel.className='cert';
+ const rainoutInput=document.createElement('input');rainoutInput.type='checkbox';rainoutInput.id=prefix+'_rainout';
+ rainoutLabel.append(rainoutInput,el('span','I certify that this request concerns a game that was rained out and is eligible for rescheduling under STXCL policy. I understand this portal cannot be used for convenience changes, club scheduling mistakes, or other non-rainout reasons; those require a Game Change Request (GCR) through the league website.'));
+ container.append(rainoutLabel);
  const label=document.createElement('label');label.className='cert';
  const input=document.createElement('input');input.type='checkbox';input.id=prefix+'_all';
  const span=el('span','I have read, understand, and certify all of the statements above.');
@@ -18,7 +22,7 @@ function certHtml(prefix){
 }
 function certs(prefix){
  const accepted=$(prefix+'_all').checked;
- return {authority:accepted,field:accepted,referee:accepted,finality:accepted,disclaimer:accepted,scheduleResponsibility:accepted};
+ return {rainout:$(prefix+'_rainout').checked,authority:accepted,field:accepted,referee:accepted,finality:accepted,disclaimer:accepted,scheduleResponsibility:accepted};
 }
 function timeOptions(id){const s=$(id);s.replaceChildren(new Option('Select time',''));
  for(let min=7*60;min<=21*60+30;min+=15){const h=Math.floor(min/60),m=min%60,ampm=h<12?'AM':'PM',display=(h%12||12)+':'+String(m).padStart(2,'0')+' '+ampm;s.add(new Option(display,display));}}
