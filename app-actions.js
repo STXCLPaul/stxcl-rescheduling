@@ -9,7 +9,8 @@ async function submitInitial(){clearStatus();if(!gameData){error('Look up the ga
  try{const r=await call('submitRequest',data);$('initial').classList.add('hidden');success('Request '+r.id+' submitted. Status: '+r.status+'. No schedule changes have been made.');}
  catch(e){error(e.message);}}
 async function loadReview(){try{reviewData=await call('getReview',RID,TOKEN);$('reviewMeta').textContent='Request '+reviewData.id+' | '+reviewData.status+' | You are reviewing as '+reviewData.actorEmail;
- renderGame($('reviewGame'),reviewData.game);await setProposal('review',reviewData.proposal);}
+ renderGame($('reviewGame'),reviewData.game);await setProposal('review',reviewData.proposal);
+ if(reviewData.actorRole==='REQUESTOR'){$('reviewName').value=reviewData.requestorName||'';$('reviewRole').value=reviewData.requestorRole||'';}}
  catch(e){$('review').classList.add('hidden');error(e.message);}}
 function proposalChangedFromReceived(){
  if(!reviewData)return false;
@@ -18,13 +19,15 @@ function proposalChangedFromReceived(){
  return ['date','time','complex','field'].some(key=>String(current[key]??'').trim()!==String(original[key]??'').trim());
 }
 async function reviewAction(action){clearStatus();if(!reviewData)return;
+ const representativeName=$('reviewName').value.trim(),representativeRole=$('reviewRole').value;
+ if(!representativeName||!representativeRole){error('Enter your full name and role before responding to this request.');return;}
  if(action==='APPROVE'&&proposalChangedFromReceived()){
   error('You have modified the proposed schedule. Approval is only possible without changes. To submit your modifications, select "Send counterproposal," or restore the original values to approve the existing proposal.');
   return;
  }
  if(action==='REJECT'){if(!confirm('Reject and close this rescheduling request?'))return;}
  else if(!confirm(action==='APPROVE'?'Approve this exact proposal and forward it to STXCL for review?':'Send these four proposed scheduling values back to the other club?'))return;
- try{const out=await call('actOnRequest',{id:RID,token:TOKEN,action,proposal:action==='COUNTER'?proposal('review'):null,certs:certs('review')});
+ try{const out=await call('actOnRequest',{id:RID,token:TOKEN,action,representativeName,representativeRole,proposal:action==='COUNTER'?proposal('review'):null,certs:certs('review')});
  $('review').classList.add('hidden');success('Request '+out.id+' updated: '+out.status+'. This link is now closed.');}
  catch(e){error(e.message);}}
 async function init(){certHtml('initial');certHtml('review');timeOptions('time');timeOptions('reviewTime');
