@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html><head><meta name="referrer" content="no-referrer"><meta charset="utf-8">
 <link rel="stylesheet" href="style.css"></head>
-<body><header><h1>STXCL Rescheduling Request</h1><p>Club-to-club agreement portal • Submission does not change the game schedule</p></header>
+<body><header><h1>STXCL Rainout Rescheduling Request</h1><p>Club-to-club rainout rescheduling agreement portal • Submission does not change the game schedule</p></header>
 <div id="busy">Processing…</div><main>
+<div class="panel"><strong>RAINOUTS ONLY.</strong> This portal may be used only for games rained out and eligible for rescheduling under STXCL policy. Requests for convenience, club scheduling errors, or other non-rainout changes must use the Game Change Request (GCR) form available on the league website.</div>
 <div id="error" class="error hidden" role="alert"></div><div id="ok" class="success hidden" role="status"></div>
 <section id="initial">
  <div class="panel"><h2>1. Requesting club representative</h2>
@@ -27,7 +28,7 @@
   <label for="opponents">Email addresses (one or more) *</label>
   <input id="opponents" placeholder="manager@club.com, coach@club.com">
   <p class="muted">Separate multiple addresses with commas or semicolons. Each receives a separate approval link; the first response determines the opposing club's action.</p></div>
- <div class="panel"><h2>5. Certifications & acknowledgments</h2><div id="initialCerts"></div>
+ <div class="panel"><h2>5. Rainout eligibility & acknowledgments</h2><div id="initialCerts"></div>
   <div class="actions"><button type="button" onclick="submitInitial()">Send to opposing club</button></div>
   <p class="muted">Your request is not forwarded to STXCL until both clubs agree.</p></div>
 </section>
@@ -45,9 +46,9 @@
   <div><label for="reviewField">Field</label><select id="reviewField"></select></div>
   <div id="reviewOtherComplexWrap" class="hidden"><label for="reviewOtherComplex">Other complex</label><input id="reviewOtherComplex"></div>
   <div id="reviewOtherFieldWrap" class="hidden"><label for="reviewOtherField">Other field</label><input id="reviewOtherField"></div></div></div>
- <div class="panel"><h2>Required certifications</h2><div id="reviewCerts"></div>
+ <div class="panel"><h2>Rainout eligibility & required certifications</h2><div id="reviewCerts"></div>
   <p class="muted">Required for approval and again for any counterproposal. All agreement is subject to STXCL review.</p>
   <div class="actions"><button onclick="reviewAction('APPROVE')">Approve proposal</button><button class="secondary" onclick="reviewAction('COUNTER')">Send counterproposal</button><button class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
 </section>
 </main>
-<script src="app-core.js"></script><script src="app-controls.js?v=5"></script><script src="app-form.js"></script><script src="app-actions.js?v=6"></script></body></html>
+<script src="app-core.js"></script><script src="app-controls.js?v=9"></script><script src="app-form.js"></script><script src="app-actions.js?v=9"></script></body></html>
