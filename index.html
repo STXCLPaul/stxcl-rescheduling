@@ -5,6 +5,7 @@
 <div id="busy">Processing…</div><main>
 <div class="panel"><strong>RAINOUTS ONLY.</strong> This portal may be used only for games rained out and eligible for rescheduling under STXCL policy. Requests for convenience, club scheduling errors, or other non-rainout changes must use the Game Change Request (GCR) form available on the league website.</div>
 <div id="error" class="error hidden" role="alert"></div><div id="ok" class="success hidden" role="status"></div>
+<div id="completedActions" class="panel hidden"><div class="actions"><button type="button" onclick="startNewForm()">Start new form</button><button type="button" class="secondary" onclick="closePortalWindow()">Close this window</button></div><p id="closeHint" class="muted hidden">Your browser may not allow a website to close a tab you opened yourself. You can close this tab manually using Ctrl+W.</p></div>
 <section id="initial">
  <div class="panel"><h2>1. Requesting club representative</h2>
   <div class="grid"><div><label for="name">Full name *</label><input id="name" autocomplete="name"></div>
@@ -19,7 +20,7 @@
  <div class="panel"><h2>3. Proposed new schedule</h2><div class="grid">
    <div><label for="date">Proposed date *</label><input id="date" type="date"></div>
    <div><label for="time">Proposed time *</label><select id="time"></select></div>
-   <div><label for="complex">Proposed complex *</label><select id="complex" onchange="changeComplex('')"></select></div>
+   <div><label for="complex">Proposed complex * <a href="https://docs.google.com/spreadsheets/d/1RiQkjgBRmblx-WVW-By-YwzPWDMwgdI-IaMxKzCZuyM/edit?gid=1435206595#gid=1435206595" target="_blank" rel="noopener noreferrer" style="margin-left:12px;font-weight:normal">STXCL MATRIX</a></label><select id="complex" onchange="changeComplex('')"></select></div>
    <div><label for="field">Proposed field *</label><select id="field"></select></div>
    <div id="otherComplexWrap" class="hidden"><label for="otherComplex">New complex name *</label><input id="otherComplex"></div>
    <div id="otherFieldWrap" class="hidden"><label for="otherField">Field at new complex *</label><input id="otherField"></div>
@@ -51,4 +52,4 @@
   <div class="actions"><button onclick="reviewAction('APPROVE')">Approve proposal</button><button class="secondary" onclick="reviewAction('COUNTER')">Send counterproposal</button><button class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
 </section>
 </main>
-<script src="app-core.js"></script><script src="app-controls.js?v=10"></script><script src="app-form.js"></script><script src="app-actions.js?v=9"></script></body></html>
+<script src="app-core.js"></script><script src="app-controls.js?v=10"></script><script src="app-form.js"></script><script src="app-actions.js?v=11"></script></body></html>
