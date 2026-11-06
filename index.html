@@ -34,7 +34,11 @@
 <section id="review" class="hidden">
  <div class="panel"><h2>Opposing club / requestor review</h2><p id="reviewMeta" class="note"></p>
   <h2>Current game (locked)</h2><div id="reviewGame" class="details"></div></div>
- <div class="panel"><h2>Proposed schedule</h2><p class="muted">Only the following four values may change in a counterproposal.</p>
+ <div class="panel"><h2>Reviewing club representative</h2>
+ <div class="grid"><div><label for="reviewName">Full name *</label><input id="reviewName" autocomplete="name"></div>
+ <div><label for="reviewRole">Role *</label><select id="reviewRole"><option value="">Select role</option><option>Coach</option><option>Team Manager</option><option>Club Administrator</option><option>Other</option></select></div></div>
+ <p class="muted">Your name and role will be recorded with your response. The approving representative will be included in the league's review record.</p></div>
+<div class="panel"><h2>Proposed schedule</h2><p class="muted">Only the following four values may change in a counterproposal.</p>
   <div class="grid"><div><label for="reviewDate">Date</label><input id="reviewDate" type="date"></div>
   <div><label for="reviewTime">Time</label><select id="reviewTime"></select></div>
   <div><label for="reviewComplex">Complex</label><select id="reviewComplex" onchange="changeComplex('review')"></select></div>
@@ -46,4 +50,4 @@
   <div class="actions"><button onclick="reviewAction('APPROVE')">Approve proposal</button><button class="secondary" onclick="reviewAction('COUNTER')">Send counterproposal</button><button class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
 </section>
 </main>
-<script src="app-core.js"></script><script src="app-controls.js?v=5"></script><script src="app-form.js"></script><script src="app-actions.js?v=5"></script></body></html>
+<script src="app-core.js"></script><script src="app-controls.js?v=5"></script><script src="app-form.js"></script><script src="app-actions.js?v=6"></script></body></html>
