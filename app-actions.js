@@ -1,3 +1,13 @@
+function showCompletedActions(){$('completedActions').classList.remove('hidden');}
+function startNewForm(){
+ // A fresh navigation also clears any approval link parameters/state.
+ window.location.assign(window.location.origin+window.location.pathname);
+}
+function closePortalWindow(){
+ window.close();
+ // Most browsers do not permit closing a tab opened manually.
+ $('closeHint').classList.remove('hidden');
+}
 async function lookup(){clearStatus();try{gameData=await call('findGame',$('game').value);renderGame($('gameDetails'),gameData);
  const d=toIso(gameData.date);await setProposal('',{date:d,time:gameData.time,complex:gameData.complex,field:gameData.field});}
  catch(e){gameData=null;$('gameDetails').classList.add('hidden');error(e.message);}}
@@ -8,7 +18,7 @@ async function submitInitial(){clearStatus();if(!gameData){error('Look up the ga
  const data={name:$('name').value,club:$('club').value,role:$('role').value,email:$('email').value,
    gameNumber:gameData.gameNumber,opponentEmails:$('opponents').value,proposal:proposal(''),certs:certs('initial')};
  if(!confirm('Send this request to the opposing club for review?'))return;
- try{const r=await call('submitRequest',data);$('initial').classList.add('hidden');success('Request '+r.id+' submitted. Status: '+r.status+'. No schedule changes have been made.');}
+ try{const r=await call('submitRequest',data);$('initial').classList.add('hidden');success('Request '+r.id+' submitted. Status: '+r.status+'. No schedule changes have been made.');showCompletedActions();}
  catch(e){error(e.message);}}
 async function loadReview(){try{reviewData=await call('getReview',RID,TOKEN);$('reviewMeta').textContent='Request '+reviewData.id+' | '+reviewData.status+' | You are reviewing as '+reviewData.actorEmail;
  renderGame($('reviewGame'),reviewData.game);await setProposal('review',reviewData.proposal);
@@ -32,7 +42,7 @@ async function reviewAction(action){clearStatus();if(!reviewData)return;
  if(action==='REJECT'){if(!confirm('Reject and close this rescheduling request?'))return;}
  else if(!confirm(action==='APPROVE'?'Approve this exact proposal and forward it to STXCL for review?':'Send these four proposed scheduling values back to the other club?'))return;
  try{const out=await call('actOnRequest',{id:RID,token:TOKEN,action,representativeName,representativeRole,proposal:action==='REJECT'?null:proposal('review'),certs:certs('review')});
- $('review').classList.add('hidden');success('Request '+out.id+' updated: '+out.status+'. This link is now closed.');}
+ $('review').classList.add('hidden');success('Request '+out.id+' updated: '+out.status+'. This link is now closed.');showCompletedActions();}
  catch(e){error(e.message);}}
 async function init(){certHtml('initial');certHtml('review');timeOptions('time');timeOptions('reviewTime');
  if(RID&&TOKEN){$('initial').classList.add('hidden');$('review').classList.remove('hidden');}
