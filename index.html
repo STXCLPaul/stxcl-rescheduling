@@ -14,7 +14,7 @@
  <div class="panel"><h2>2. Identify the existing game</h2>
    <div class="grid"><div><label for="game">Game number *</label><input id="game" inputmode="numeric" placeholder="Game #"></div>
    <div style="align-self:end"><button type="button" onclick="lookup()">Look up game</button></div></div>
-   <p class="muted">Game details are retrieved from the live STXCL EXPORT sheet. No changes are made to that sheet.</p>
+   
    <div id="gameDetails" class="details hidden"></div></div>
  <div class="panel"><h2>3. Proposed new schedule</h2><div class="grid">
    <div><label for="date">Proposed date *</label><input id="date" type="date"></div>
@@ -23,7 +23,7 @@
    <div><label for="field">Proposed field *</label><select id="field"></select></div>
    <div id="otherComplexWrap" class="hidden"><label for="otherComplex">New complex name *</label><input id="otherComplex"></div>
    <div id="otherFieldWrap" class="hidden"><label for="otherField">Field at new complex *</label><input id="otherField"></div>
-   </div><p class="muted">Complexes and fields are read from the live Field Matrix. "Other" allows a new complex or field.</p></div>
+   </div><p class="muted">"Other" allows a new complex or field to be requested, subject to STXCL approval. Follow the standard protocol to submit the facility information for Commissioner approval.</p></div>
  <div class="panel"><h2>4. Opposing club approval recipients</h2>
   <label for="opponents">Email addresses (one or more) *</label>
   <input id="opponents" placeholder="manager@club.com, coach@club.com">
@@ -51,4 +51,4 @@
   <div class="actions"><button onclick="reviewAction('APPROVE')">Approve proposal</button><button class="secondary" onclick="reviewAction('COUNTER')">Send counterproposal</button><button class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
 </section>
 </main>
-<script src="app-core.js"></script><script src="app-controls.js?v=9"></script><script src="app-form.js"></script><script src="app-actions.js?v=9"></script></body></html>
+<script src="app-core.js"></script><script src="app-controls.js?v=10"></script><script src="app-form.js"></script><script src="app-actions.js?v=9"></script></body></html>
