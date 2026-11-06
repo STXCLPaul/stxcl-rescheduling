@@ -3,6 +3,8 @@ async function lookup(){clearStatus();try{gameData=await call('findGame',$('game
  catch(e){gameData=null;$('gameDetails').classList.add('hidden');error(e.message);}}
 function toIso(d){const m=String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);return m?m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0'):'';}
 async function submitInitial(){clearStatus();if(!gameData){error('Look up the game number before submitting.');return;}
+ if(!$('initial_rainout').checked){error('This portal is for eligible rainouts only. You must separately certify rainout eligibility. For other changes, use the STXCL Game Change Request form.');return;}
+ if(!$('initial_all').checked){error('Read and accept the required certifications and acknowledgments.');return;}
  const data={name:$('name').value,club:$('club').value,role:$('role').value,email:$('email').value,
    gameNumber:gameData.gameNumber,opponentEmails:$('opponents').value,proposal:proposal(''),certs:certs('initial')};
  if(!confirm('Send this request to the opposing club for review?'))return;
@@ -21,6 +23,8 @@ function proposalChangedFromReceived(){
 async function reviewAction(action){clearStatus();if(!reviewData)return;
  const representativeName=$('reviewName').value.trim(),representativeRole=$('reviewRole').value;
  if(!representativeName||!representativeRole){error('Enter your full name and role before responding to this request.');return;}
+ if(action!=='REJECT'&&!$('review_rainout').checked){error('You must certify that this game was rained out and is eligible for rainout rescheduling under STXCL policy.');return;}
+ if(action!=='REJECT'&&!$('review_all').checked){error('Read and accept the required certifications and acknowledgments.');return;}
  if(action==='APPROVE'&&proposalChangedFromReceived()){
   error('You have modified the proposed schedule. Approval is only possible without changes. To submit your modifications, select "Send counterproposal," or restore the original values to approve the existing proposal.');
   return;
