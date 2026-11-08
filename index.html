@@ -18,13 +18,13 @@
    
    <div id="gameDetails" class="details hidden"></div></div>
  <div class="panel"><h2>3. Proposed new schedule</h2><div class="grid">
-   <div><label for="date">Proposed date *</label><input id="date" type="date"></div>
+   <div><label for="date">Proposed date *</label><input id="date" type="date" onchange="checkConflicts('initial')"></div>
    <div><label for="time">Proposed time *</label><select id="time"></select></div>
    <div><label for="complex">Proposed complex * <a href="https://docs.google.com/spreadsheets/d/1RiQkjgBRmblx-WVW-By-YwzPWDMwgdI-IaMxKzCZuyM/edit?gid=1435206595#gid=1435206595" target="_blank" rel="noopener noreferrer" style="margin-left:12px;font-weight:normal">STXCL MATRIX</a></label><select id="complex" onchange="changeComplex('')"></select></div>
    <div><label for="field">Proposed field *</label><select id="field"></select></div>
    <div id="otherComplexWrap" class="hidden"><label for="otherComplex">New complex name *</label><input id="otherComplex"></div>
    <div id="otherFieldWrap" class="hidden"><label for="otherField">Field at new complex *</label><input id="otherField"></div>
-   </div><p class="muted">"Other" allows a new complex or field to be requested, subject to STXCL approval. Follow the standard protocol to submit the facility information for Commissioner approval.</p></div>
+   </div><div id="initialConflict" class="conflict-box hidden" role="alert"></div><p class="muted">"Other" allows a new complex or field to be requested, subject to STXCL approval. Follow the standard protocol to submit the facility information for Commissioner approval.</p></div>
  <div class="panel"><h2>4. Opposing club approval recipients</h2>
   <p class="muted"><strong>Club contact resources:</strong> <a href="https://directory.thestxcl.com/" target="_blank" rel="noopener noreferrer">Contacts Directory</a> &nbsp;|&nbsp; <a href="https://docs.google.com/spreadsheets/d/1MVGxZabc4eH095eRdw7bU1ruDwMwha-1WPv-b9nc3j8/edit?gid=1188326267#gid=1188326267" target="_blank" rel="noopener noreferrer">Contact Sheet</a></p>
   <label for="opponents">Email addresses (one or more) *</label>
@@ -43,15 +43,15 @@
  <div><label for="reviewRole">Role *</label><select id="reviewRole"><option value="">Select role</option><option>Coach</option><option>Team Manager</option><option>Club Administrator</option><option>Other</option></select></div></div>
  <p class="muted">Your name and role will be recorded with your response. The approving representative will be included in the league's review record.</p></div>
 <div class="panel"><h2>Proposed schedule</h2><p class="muted">Only the following four values may change in a counterproposal.</p>
-  <div class="grid"><div><label for="reviewDate">Date</label><input id="reviewDate" type="date"></div>
+  <div class="grid"><div><label for="reviewDate">Date</label><input id="reviewDate" type="date" onchange="checkConflicts('review')"></div>
   <div><label for="reviewTime">Time</label><select id="reviewTime"></select></div>
   <div><label for="reviewComplex">Complex</label><select id="reviewComplex" onchange="changeComplex('review')"></select></div>
   <div><label for="reviewField">Field</label><select id="reviewField"></select></div>
   <div id="reviewOtherComplexWrap" class="hidden"><label for="reviewOtherComplex">Other complex</label><input id="reviewOtherComplex"></div>
-  <div id="reviewOtherFieldWrap" class="hidden"><label for="reviewOtherField">Other field</label><input id="reviewOtherField"></div></div></div>
+  <div id="reviewOtherFieldWrap" class="hidden"><label for="reviewOtherField">Other field</label><input id="reviewOtherField"></div></div><div id="reviewConflict" class="conflict-box hidden" role="alert"></div></div>
  <div class="panel"><h2>Rainout eligibility & required certifications</h2><div id="reviewCerts"></div>
   <p class="muted">Required for approval and again for any counterproposal. All agreement is subject to STXCL review.</p>
   <div class="actions"><button onclick="reviewAction('APPROVE')">Approve proposal</button><button class="secondary" onclick="reviewAction('COUNTER')">Send counterproposal</button><button class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
 </section>
 </main>
-<script src="app-core.js"></script><script src="app-controls.js?v=10"></script><script src="app-form.js"></script><script src="app-actions.js?v=11"></script></body></html>
+<script src="app-core.js"></script><script src="app-controls.js?v=10"></script><script src="app-form.js"></script><script src="app-conflicts.js?v=1"></script><script src="app-actions.js?v=12"></script></body></html>
