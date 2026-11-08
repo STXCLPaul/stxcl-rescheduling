@@ -45,8 +45,13 @@ async function checkConflicts(prefix,quiet=false){
  const id=++conflictSerial[prefix];
  const previous=conflictState[prefix];
  const ack=previous?.date===date&&previous?.result?.status==='WARN'&&conflictAcknowledged(prefix);
- const box=conflictBox(prefix);box.classList.remove('hidden');box.className='conflict-box';
- box.replaceChildren(el('span','Checking existing games on this date…'));
+ const box=conflictBox(prefix);box.classList.remove('hidden');box.className='conflict-box conflict-loading';
+ const progress=document.createElement('div');progress.className='conflict-progress';progress.setAttribute('role','status');
+ const spinner=document.createElement('span');spinner.className='conflict-spinner';spinner.setAttribute('aria-hidden','true');
+ progress.append(spinner,el('strong','Checking existing games on this date…'));
+ const disclaimer=el('p','Experimental feature: Clubs must independently verify their schedules and confirm the proposed arrangement is feasible. This check does not replace that responsibility.');
+ disclaimer.className='conflict-disclaimer';
+ box.replaceChildren(progress,disclaimer);
  try{
    const result=await conflictApi(game.gameNumber,date);
    if(id!==conflictSerial[prefix])return null;
