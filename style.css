@@ -20,3 +20,12 @@ button.secondary{background:#e7f0f6;color:#194462}button.danger{background:#a936
 .conflict-game{padding:10px 12px;margin:8px 0;border:1px solid #decda6;border-radius:6px;background:#ffffffb8}
 .conflict-game div{margin-top:3px}
 .conflict-box .cert{font-weight:600;line-height:1.45;margin-bottom:3px}
+
+/* Small, non-blocking indicator while live schedule validation runs. */
+.conflict-loading{background:#eaf4fb;border-color:#94bedb;color:#173f5b}
+.conflict-progress{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.4}
+.conflict-progress strong{font-weight:700}
+.conflict-spinner{flex:0 0 17px;width:17px;height:17px;border:3px solid #a6c9df;border-top-color:#176392;border-radius:50%;animation:conflict-spin .75s linear infinite}
+.conflict-disclaimer{margin:6px 0 0 27px;font-size:12px;line-height:1.45;color:#526a7a}
+@keyframes conflict-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.conflict-spinner{animation:none;border-top-color:#176392}}
