@@ -29,3 +29,5 @@ button.secondary{background:#e7f0f6;color:#194462}button.danger{background:#a936
 .conflict-disclaimer{margin:6px 0 0 27px;font-size:12px;line-height:1.45;color:#526a7a}
 @keyframes conflict-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.conflict-spinner{animation:none;border-top-color:#176392}}
+
+.conflict-retry{margin-top:8px;padding:7px 11px;font-size:12px;font-weight:600}
