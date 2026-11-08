@@ -13,3 +13,10 @@ button.secondary{background:#e7f0f6;color:#194462}button.danger{background:#a936
 .cert{display:flex;align-items:flex-start;gap:10px;margin:15px 0;line-height:1.5;font-weight:normal;font-size:14px}.cert input{width:auto;margin-top:4px}
 #busy{position:fixed;inset:0;background:#ffffffb8;display:none;align-items:center;justify-content:center;z-index:5;font-size:20px;font-weight:bold}#busy.show{display:flex}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.details{grid-template-columns:110px 1fr}header{padding:20px}main{margin-top:12px}.panel{padding:16px}}
+
+.conflict-box{padding:15px;margin:14px 0;border-radius:8px;border:1px solid #cbd6df;background:#f1f6fa;font-size:14px;line-height:1.45}
+.conflict-block{background:#fff0f0;border-color:#db8888;color:#8b2020}
+.conflict-warning{background:#fff8e8;border-color:#dca644;color:#573900}
+.conflict-game{padding:10px 12px;margin:8px 0;border:1px solid #decda6;border-radius:6px;background:#ffffffb8}
+.conflict-game div{margin-top:3px}
+.conflict-box .cert{font-weight:600;line-height:1.45;margin-bottom:3px}
