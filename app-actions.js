@@ -16,7 +16,7 @@ function invalidateLookup(){
  $('gameDetails').classList.add('hidden');
 }
 async function lookup(){clearStatus();resetConflict('initial');gameData=null;try{gameData=await call('findGame',$('game').value);renderGame($('gameDetails'),gameData);
- const d=toIso(gameData.date);await setProposal('',{date:d,time:gameData.time,complex:gameData.complex,field:gameData.field});}
+ const d=toIso(gameData.date);await setProposal('',{date:d,time:gameData.time,complex:gameData.complex,field:gameData.field});updateConflictActions('initial');}
  catch(e){gameData=null;$('gameDetails').classList.add('hidden');error(e.message);}}
 function toIso(d){const m=String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);return m?m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0'):'';}
 async function submitInitial(){clearStatus();if(!gameData){error('Look up the game number before submitting.');return;}
