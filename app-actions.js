@@ -8,6 +8,13 @@ function closePortalWindow(){
  // Most browsers do not permit closing a tab opened manually.
  $('closeHint').classList.remove('hidden');
 }
+function invalidateLookup(){
+ // Changing the game number invalidates prior game data and its date check.
+ if(!gameData)return;
+ gameData=null;
+ resetConflict('initial');
+ $('gameDetails').classList.add('hidden');
+}
 async function lookup(){clearStatus();resetConflict('initial');gameData=null;try{gameData=await call('findGame',$('game').value);renderGame($('gameDetails'),gameData);
  const d=toIso(gameData.date);await setProposal('',{date:d,time:gameData.time,complex:gameData.complex,field:gameData.field});}
  catch(e){gameData=null;$('gameDetails').classList.add('hidden');error(e.message);}}
@@ -15,7 +22,7 @@ function toIso(d){const m=String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);ret
 async function submitInitial(){clearStatus();if(!gameData){error('Look up the game number before submitting.');return;}
  if(!$('initial_rainout').checked){error('This portal is for eligible rainouts only. You must separately certify rainout eligibility. For other changes, use the STXCL Game Change Request form.');return;}
  if(!$('initial_all').checked){error('Read and accept the required certifications and acknowledgments.');return;}
- if(!await validateConflictAction('initial'))return;
+ if(!validateConflictAction('initial'))return;
  const data={name:$('name').value,club:$('club').value,role:$('role').value,email:$('email').value,
    gameNumber:gameData.gameNumber,opponentEmails:$('opponents').value,proposal:proposal(''),certs:certs('initial'),doubleHeaderAcknowledged:conflictAcknowledged('initial')};
  if(!confirm('Send this request to the opposing club for review?'))return;
@@ -40,7 +47,7 @@ async function reviewAction(action){clearStatus();if(!reviewData)return;
   error('You have modified the proposed schedule. Approval is only possible without changes. To submit your modifications, select "Send counterproposal," or restore the original values to approve the existing proposal.');
   return;
  }
- if(action!=='REJECT'&&!await validateConflictAction('review'))return;
+ if(action!=='REJECT'&&!validateConflictAction('review'))return;
  if(action==='REJECT'){if(!confirm('Reject and close this rescheduling request?'))return;}
  else if(!confirm(action==='APPROVE'?'Approve this exact proposal and forward it to STXCL for review?':'Send these four proposed scheduling values back to the other club?'))return;
  try{const out=await call('actOnRequest',{id:RID,token:TOKEN,action,representativeName,representativeRole,proposal:action==='REJECT'?null:proposal('review'),certs:certs('review'),doubleHeaderAcknowledged:conflictAcknowledged('review')});
