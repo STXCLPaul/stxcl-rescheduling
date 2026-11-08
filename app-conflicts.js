@@ -1,3 +1,10 @@
+async function conflictApi(gameNumber,date){
+ const response=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({method:'checkScheduleConflict',args:[gameNumber,date]})});
+ const packet=await response.json();
+ if(!response.ok||!packet.ok)throw Error(packet.error||'Conflict check failed.');
+ return packet.result;
+}
 const conflictState={initial:null,review:null};
 const conflictSerial={initial:0,review:0};
 function conflictBox(prefix){return $(prefix==='review'?'reviewConflict':'initialConflict');}
@@ -41,7 +48,7 @@ async function checkConflicts(prefix,quiet=false){
  const box=conflictBox(prefix);box.classList.remove('hidden');box.className='conflict-box';
  box.replaceChildren(el('span','Checking existing games on this date…'));
  try{
-   const result=await call('checkScheduleConflict',game.gameNumber,date);
+   const result=await conflictApi(game.gameNumber,date);
    if(id!==conflictSerial[prefix])return null;
    conflictState[prefix]={date,result};
    if(result.status==='CLEAR'){box.replaceChildren();box.classList.add('hidden');return result;}
