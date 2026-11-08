@@ -24,7 +24,7 @@ function updateConflictActions(prefix){
  const buttons=prefix==='review'?['reviewApproveBtn','reviewCounterBtn']:['submitInitialBtn'];
  buttons.forEach(id=>{const button=$(id);if(button)button.disabled=!ready;});
  const retry=$(prefix==='review'?'reviewRetryBtn':'initialRetryBtn');
- if(retry)retry.disabled=!!conflictInFlight[prefix];
+ if(retry)retry.disabled=!!conflictInFlight[prefix]||!conflictGame(prefix)||!conflictDate(prefix);
 }
 function conflictBox(prefix){return $(prefix==='review'?'reviewConflict':'initialConflict');}
 function conflictAck(prefix){return $(prefix==='review'?'reviewConflictAck':'initialConflictAck');}
