@@ -1,18 +1,41 @@
-async function conflictApi(gameNumber,date){
+async function conflictApi(gameNumber,date,signal){
  const response=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-   body:JSON.stringify({method:'checkScheduleConflict',args:[gameNumber,date]})});
+   body:JSON.stringify({method:'checkScheduleConflict',args:[gameNumber,date]}),signal});
  const packet=await response.json();
  if(!response.ok||!packet.ok)throw Error(packet.error||'Conflict check failed.');
  return packet.result;
 }
 const conflictState={initial:null,review:null};
 const conflictSerial={initial:0,review:0};
+const conflictInFlight={initial:false,review:false};
+const conflictAbort={initial:null,review:null};
+function conflictGame(prefix){return prefix==='review'?reviewData?.game:gameData;}
+function conflictDate(prefix){return $(prefix==='review'?'reviewDate':'date').value;}
+function conflictCheckReady(prefix){
+ const state=conflictState[prefix],game=conflictGame(prefix),date=conflictDate(prefix);
+ if(!state||!game||!date||conflictInFlight[prefix]||state.date!==date||
+    state.gameNumber!==String(game.gameNumber))return false;
+ if(state.result.status==='BLOCK')return false;
+ if(state.result.status==='WARN')return conflictAcknowledged(prefix);
+ return state.result.status==='CLEAR';
+}
+function updateConflictActions(prefix){
+ const ready=conflictCheckReady(prefix);
+ const buttons=prefix==='review'?['reviewApproveBtn','reviewCounterBtn']:['submitInitialBtn'];
+ buttons.forEach(id=>{const button=$(id);if(button)button.disabled=!ready;});
+ const retry=$(prefix==='review'?'reviewRetryBtn':'initialRetryBtn');
+ if(retry)retry.disabled=!!conflictInFlight[prefix];
+}
 function conflictBox(prefix){return $(prefix==='review'?'reviewConflict':'initialConflict');}
 function conflictAck(prefix){return $(prefix==='review'?'reviewConflictAck':'initialConflictAck');}
 function resetConflict(prefix){
   conflictSerial[prefix]++;
+  if(conflictAbort[prefix])conflictAbort[prefix].abort();
+  conflictAbort[prefix]=null;
+  conflictInFlight[prefix]=false;
   conflictState[prefix]=null;
   const box=conflictBox(prefix);box.replaceChildren();box.classList.add('hidden');
+  updateConflictActions(prefix);
 }
 function conflictAcknowledged(prefix){return !!conflictAck(prefix)?.checked;}
 function renderConflict(prefix,result){
@@ -35,16 +58,22 @@ function renderConflict(prefix,result){
    const check=document.createElement('input');check.type='checkbox';
    check.id=prefix==='review'?'reviewConflictAck':'initialConflictAck';
    label.append(check,el('span','I understand that the proposed date creates a double-header, have reviewed the existing game(s), and accept responsibility for confirming that the requested schedule is feasible. I understand that a failure to participate may result in a forfeit or require a Game Change Request (GCR) with applicable fees.'));
+   check.addEventListener('change',()=>updateConflictActions(prefix));
    box.append(label);
  }
 }
 async function checkConflicts(prefix,quiet=false){
- const game=prefix==='review'?reviewData?.game:gameData;
- const date=$(prefix==='review'?'reviewDate':'date').value;
+ const game=conflictGame(prefix);
+ const date=conflictDate(prefix);
  if(!game||!date){resetConflict(prefix);return null;}
+ // Starting another check invalidates and aborts the previous browser request.
+ if(conflictAbort[prefix])conflictAbort[prefix].abort();
  const id=++conflictSerial[prefix];
- const previous=conflictState[prefix];
- const ack=previous?.date===date&&previous?.result?.status==='WARN'&&conflictAcknowledged(prefix);
+ const controller=new AbortController();
+ conflictAbort[prefix]=controller;
+ conflictState[prefix]=null;
+ conflictInFlight[prefix]=true;
+ updateConflictActions(prefix);
  const box=conflictBox(prefix);box.classList.remove('hidden');box.className='conflict-box conflict-loading';
  const progress=document.createElement('div');progress.className='conflict-progress';progress.setAttribute('role','status');
  const spinner=document.createElement('span');spinner.className='conflict-spinner';spinner.setAttribute('aria-hidden','true');
@@ -53,27 +82,42 @@ async function checkConflicts(prefix,quiet=false){
  disclaimer.className='conflict-disclaimer';
  box.replaceChildren(progress,disclaimer);
  try{
-   const result=await conflictApi(game.gameNumber,date);
-   if(id!==conflictSerial[prefix])return null;
-   conflictState[prefix]={date,result};
-   if(result.status==='CLEAR'){box.replaceChildren();box.classList.add('hidden');return result;}
-   renderConflict(prefix,result);
-   if(ack&&result.status==='WARN')conflictAck(prefix).checked=true;
+   const result=await conflictApi(game.gameNumber,date,controller.signal);
+   if(id!==conflictSerial[prefix]||date!==conflictDate(prefix))return null;
+   conflictState[prefix]={gameNumber:String(game.gameNumber),date,result};
+   if(result.status==='CLEAR'){
+     box.replaceChildren();box.classList.add('hidden');
+   }else{
+     renderConflict(prefix,result);
+   }
    return result;
  }catch(e){
    if(id!==conflictSerial[prefix])return null;
    conflictState[prefix]=null;
-   box.className='conflict-box conflict-block';box.replaceChildren(el('strong','Unable to verify same-day games'),el('p',e.message));
+   box.className='conflict-box conflict-block';
+   box.replaceChildren(el('strong','Unable to verify same-day games'),el('p',e.message));
    if(!quiet)error('Scheduling conflict check failed: '+e.message);
    return null;
+ }finally{
+   if(id===conflictSerial[prefix]){
+     conflictInFlight[prefix]=false;
+     conflictAbort[prefix]=null;
+     updateConflictActions(prefix);
+   }
  }
 }
-async function validateConflictAction(prefix){
- const result=await checkConflicts(prefix,true);
- if(!result){error('Unable to validate the proposed date against the live schedule. Please try again.');return false;}
- if(result.status==='BLOCK'){error('This proposed date is prohibited. See the conflicting game(s) shown below the date field.');return false;}
- if(result.status==='WARN'&&!conflictAcknowledged(prefix)){
-   error('Both clubs must acknowledge a permitted double-header. Please review the conflict details and check the additional acknowledgement box.');
+function validateConflictAction(prefix){
+ const result=conflictState[prefix]?.result;
+ if(!conflictCheckReady(prefix)){
+   if(conflictInFlight[prefix]){
+     error('The schedule check is still running. Please wait for it to finish.');
+   }else if(result?.status==='BLOCK'){
+     error('This date is prohibited. See the conflicting game(s) below the proposed date.');
+   }else if(result?.status==='WARN'&&!conflictAcknowledged(prefix)){
+     error('Both clubs must acknowledge the double-header warning before proceeding.');
+   }else{
+     error('Please complete the schedule check for the selected date before continuing.');
+   }
    return false;
  }
  return true;
