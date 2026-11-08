@@ -42,6 +42,11 @@ function renderConflict(prefix,result){
  const box=conflictBox(prefix);box.replaceChildren();
  box.classList.remove('hidden');
  box.className='conflict-box '+(result.status==='BLOCK'?'conflict-block':'conflict-warning');
+ if(result.status==='BLOCK'&&result.type==='CALENDAR'){
+   box.append(el('strong','Proposed date not permitted — STXCL calendar'));
+   box.append(el('p',result.reason||'The selected date is not available under the STXCL season or blackout rules. Please choose another date.'));
+   return;
+ }
  const h=el('strong',result.status==='BLOCK'?'Scheduling conflict — request cannot proceed':'Double-header warning — acknowledgement required');
  box.append(h);
  box.append(el('p','One or both teams already have a game scheduled on the requested date.'));
@@ -112,7 +117,9 @@ function validateConflictAction(prefix){
    if(conflictInFlight[prefix]){
      error('The schedule check is still running. Please wait for it to finish.');
    }else if(result?.status==='BLOCK'){
-     error('This date is prohibited. See the conflicting game(s) below the proposed date.');
+     error(result.type==='CALENDAR'?
+       'This proposed date is prohibited by STXCL season or blackout rules. See the calendar details below the proposed date.':
+       'This date is prohibited. See the conflicting game(s) below the proposed date.');
    }else if(result?.status==='WARN'&&!conflictAcknowledged(prefix)){
      error('Both clubs must acknowledge the double-header warning before proceeding.');
    }else{
