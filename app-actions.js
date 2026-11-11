@@ -16,9 +16,13 @@ function invalidateLookup(){
  $('gameDetails').classList.add('hidden');
 }
 async function lookup(){clearStatus();resetConflict('initial');gameData=null;try{gameData=await call('findGame',$('game').value);renderGame($('gameDetails'),gameData);
- const d=toIso(gameData.date);await setProposal('',{date:d,time:gameData.time,complex:gameData.complex,field:gameData.field});updateConflictActions('initial');}
+ const d=toIso(gameData.date);$('date').min=gameData.deadlinePolicyActive?followingDayIso(d):'';
+ const initialDate=gameData.deadlinePolicyActive?'':d;
+ await setProposal('',{date:initialDate,time:gameData.time,complex:gameData.complex,field:gameData.field});updateConflictActions('initial');}
  catch(e){gameData=null;$('gameDetails').classList.add('hidden');error(e.message);}}
 function toIso(d){const m=String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);return m?m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0'):'';}
+// Policy-tagged requests can only propose dates AFTER the original game date.
+function followingDayIso(iso){if(!/^\d{4}-\d{2}-\d{2}$/.test(iso))return '';const d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+1);return d.toISOString().slice(0,10);}
 async function submitInitial(){clearStatus();if(!gameData){error('Look up the game number before submitting.');return;}
  if(!$('initial_rainout').checked){error('This portal is for eligible rainouts only. You must separately certify rainout eligibility. For other changes, use the STXCL Game Change Request form.');return;}
  if(!$('initial_all').checked){error('Read and accept the required certifications and acknowledgments.');return;}
@@ -29,7 +33,9 @@ async function submitInitial(){clearStatus();if(!gameData){error('Look up the ga
  try{const r=await call('submitRequest',data);$('initial').classList.add('hidden');success('Request '+r.id+' submitted. Status: '+r.status+'. No schedule changes have been made.');showCompletedActions();}
  catch(e){error(e.message);}}
 async function loadReview(){try{reviewData=await call('getReview',RID,TOKEN);$('reviewMeta').textContent='Request '+reviewData.id+' | '+reviewData.status+' | You are reviewing as '+reviewData.actorEmail;
- renderGame($('reviewGame'),reviewData.game);await setProposal('review',reviewData.proposal);await checkConflicts('review',true);
+ renderGame($('reviewGame'),reviewData.game);
+ $('reviewDate').min=reviewData.deadlinePolicyActive?followingDayIso(toIso(reviewData.game.date)):'';
+ await setProposal('review',reviewData.proposal);await checkConflicts('review',true);
  if(reviewData.actorRole==='REQUESTOR'){$('reviewName').value=reviewData.requestorName||'';$('reviewRole').value=reviewData.requestorRole||'';}}
  catch(e){$('review').classList.add('hidden');error(e.message);}}
 function proposalChangedFromReceived(){
