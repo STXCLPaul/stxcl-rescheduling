@@ -11,8 +11,15 @@ const conflictInFlight={initial:false,review:false};
 const conflictAbort={initial:null,review:null};
 function conflictGame(prefix){return prefix==='review'?reviewData?.game:gameData;}
 function conflictDate(prefix){return $(prefix==='review'?'reviewDate':'date').value;}
+function deadlineDateInvalid(prefix){
+ const game=conflictGame(prefix);
+ const protectedRequest=prefix==='review'?!!reviewData?.deadlinePolicyActive:!!gameData?.deadlinePolicyActive;
+ const old=game?toIso(game.date):'';
+ return !!(protectedRequest && old && conflictDate(prefix) && conflictDate(prefix)<=old);
+}
 function conflictCheckReady(prefix){
  const state=conflictState[prefix],game=conflictGame(prefix),date=conflictDate(prefix);
+ if(deadlineDateInvalid(prefix))return false;
  if(!state||!game||!date||conflictInFlight[prefix]||state.date!==date||
     state.gameNumber!==String(game.gameNumber))return false;
  if(state.result.status==='BLOCK')return false;
@@ -71,6 +78,15 @@ async function checkConflicts(prefix,quiet=false){
  const game=conflictGame(prefix);
  const date=conflictDate(prefix);
  if(!game||!date){resetConflict(prefix);return null;}
+ if(deadlineDateInvalid(prefix)){
+   resetConflict(prefix);
+   const result={status:'BLOCK',type:'CALENDAR',
+       reason:'The proposed date must be later than the existing/original game date. Select a later day.'};
+   conflictState[prefix]={gameNumber:String(game.gameNumber),date,result};
+   renderConflict(prefix,result);
+   updateConflictActions(prefix);
+   return result;
+ }
  // Starting another check invalidates and aborts the previous browser request.
  if(conflictAbort[prefix])conflictAbort[prefix].abort();
  const id=++conflictSerial[prefix];
