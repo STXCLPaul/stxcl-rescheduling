@@ -9,7 +9,7 @@ function error(msg){$('error').textContent=String(msg);$('error').classList.remo
 function success(msg){$('ok').textContent=String(msg);$('ok').classList.remove('hidden');$('error').classList.add('hidden');window.scrollTo(0,0);}
 function clearStatus(){$('ok').classList.add('hidden');$('error').classList.add('hidden');}
 function busy(v){$('busy').classList.toggle('show',!!v);}
-const API_URL='https://stxcl-request-api.sweet-bar-6418.workers.dev/';
+const API_URL='https://stxcl-request-api-test.sweet-bar-6418.workers.dev/';
 async function call(server,...args){
 busy(true);
 try{
