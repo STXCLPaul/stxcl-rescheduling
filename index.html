@@ -58,9 +58,9 @@
   <div><label for="reviewField">Field</label><select id="reviewField"></select></div>
   <div id="reviewOtherComplexWrap" class="hidden"><label for="reviewOtherComplex">Other complex</label><input id="reviewOtherComplex"></div>
   <div id="reviewOtherFieldWrap" class="hidden"><label for="reviewOtherField">Other field</label><input id="reviewOtherField"></div></div><div id="reviewConflict" class="conflict-box hidden" role="alert"></div></div>
- <div class="panel"><h2>Rainout eligibility & required certifications</h2><div id="reviewCerts"></div>
+ <div class="panel"><h2>Rainout eligibility & required certifications</h2><p id="revisionAmendmentHint" class="note hidden" role="status">This is a secure revision link. Change at least one proposed schedule field and select <strong>Propose revised terms</strong>. The other club must approve the revised proposal again before STXCL can review it. You cannot approve or reject through this link.</p><div id="reviewCerts"></div>
   <p class="muted">Required for approval and again for any counterproposal. All agreement is subject to STXCL review.</p>
-  <div class="actions"><button type="button" id="reviewApproveBtn" onclick="reviewAction('APPROVE')" disabled>Approve proposal</button><button type="button" class="secondary" id="reviewCounterBtn" onclick="reviewAction('COUNTER')" disabled>Send counterproposal</button><button class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
+  <div class="actions"><button type="button" id="reviewApproveBtn" onclick="reviewAction('APPROVE')" disabled>Approve proposal</button><button type="button" class="secondary" id="reviewCounterBtn" onclick="reviewAction('COUNTER')" disabled>Send counterproposal</button><button type="button" id="reviewRejectBtn" class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
 </section>
 </main>
 <script src="app-core.js"></script><script src="app-controls.js?v=10"></script><script src="app-form.js"></script><script src="app-conflicts.js?v=5"></script><script src="app-actions.js?v=15"></script></body></html>
