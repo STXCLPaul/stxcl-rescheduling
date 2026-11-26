@@ -10,20 +10,63 @@ function closePortalWindow(){
 }
 function invalidateLookup(){
  // Changing the game number invalidates prior game data and its date check.
- if(!gameData)return;
  gameData=null;
  resetConflict('initial');
  $('gameDetails').classList.add('hidden');
+ applyExistingRequestState(null);
 }
-async function lookup(){clearStatus();resetConflict('initial');gameData=null;try{gameData=await call('findGame',$('game').value);renderGame($('gameDetails'),gameData);
- const d=toIso(gameData.date);$('date').min=gameData.deadlinePolicyActive?followingDayIso(d):'';
- const initialDate=gameData.deadlinePolicyActive?'':d;
- await setProposal('',{date:initialDate,time:gameData.time,complex:gameData.complex,field:gameData.field});updateConflictActions('initial');}
- catch(e){gameData=null;$('gameDetails').classList.add('hidden');error(e.message);}}
+function applyExistingRequestState(existing){
+ const panel=$('existingRequestPanel'),wrap=$('existingAccessWrap');
+ const exists=Boolean(existing);
+ panel.classList.toggle('hidden',!exists);
+ if(exists){
+   $('existingRequestMessage').textContent=String(existing.message||'A request already exists for this game. Contact STXCL for assistance.');
+   wrap.classList.toggle('hidden',existing.canRequestAccess!==true);
+   $('existingAccessEmail').value=$('email').value.trim();
+ }else{
+   wrap.classList.add('hidden');
+   $('existingRequestMessage').textContent='';
+ }
+ // Keep the original initial-request controls intact, but never offer a
+ // second form when the backend reports an existing request for this cycle.
+ document.querySelectorAll('#initial > .panel').forEach((part,i)=>{
+   if(i>=2)part.classList.toggle('hidden',exists);
+ });
+}
+async function sendExistingAccessLink(){
+ clearStatus();
+ const existing=gameData&&gameData.existingRequest;
+ if(!existing||existing.canRequestAccess!==true){error('This request cannot be revised through the portal. Contact STXCL.');return;}
+ const email=$('existingAccessEmail').value.trim();
+ if(!email||!$('existingAccessEmail').checkValidity()){error('Enter a valid authorized club contact email.');return;}
+ const btn=$('existingAccessButton');
+ btn.disabled=true;
+ try{
+   await call('requestExistingAccess',gameData.gameNumber,email);
+   success('If that email is an authorized contact for the existing request, a secure access link will be sent. Please check your inbox.');
+ }catch(e){error(e.message);}
+ finally{btn.disabled=false;}
+}
+async function lookup(){clearStatus();resetConflict('initial');gameData=null;applyExistingRequestState(null);
+ const requestedGame=$('game').value.trim();
+ try{
+   const found=await call('findGame',requestedGame);
+   // A delayed lookup must not restore stale game details after input changes.
+   if($('game').value.trim()!==requestedGame)return;
+   gameData=found;renderGame($('gameDetails'),gameData);
+   applyExistingRequestState(gameData.existingRequest||null);
+   if(gameData.existingRequest)return;
+   const d=toIso(gameData.date);$('date').min=gameData.deadlinePolicyActive?followingDayIso(d):'';
+   const initialDate=gameData.deadlinePolicyActive?'':d;
+   await setProposal('',{date:initialDate,time:gameData.time,complex:gameData.complex,field:gameData.field});
+   updateConflictActions('initial');
+ }catch(e){gameData=null;$('gameDetails').classList.add('hidden');applyExistingRequestState(null);error(e.message);}
+}
 function toIso(d){const m=String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);return m?m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0'):'';}
 // Policy-tagged requests can only propose dates AFTER the original game date.
 function followingDayIso(iso){if(!/^\d{4}-\d{2}-\d{2}$/.test(iso))return '';const d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+1);return d.toISOString().slice(0,10);}
 async function submitInitial(){clearStatus();if(!gameData){error('Look up the game number before submitting.');return;}
+ if(gameData.existingRequest){error('This game already has a request for the current scheduling cycle. Use its secure access link or contact STXCL; do not create another request.');return;}
  if(!$('initial_rainout').checked){error('This portal is for eligible rainouts only. You must separately certify rainout eligibility. For other changes, use the STXCL Game Change Request form.');return;}
  if(!$('initial_all').checked){error('Read and accept the required certifications and acknowledgments.');return;}
  if(!validateConflictAction('initial'))return;
