@@ -16,7 +16,16 @@
    <div class="grid"><div><label for="game">Game number *</label><input id="game" inputmode="numeric" placeholder="Game #" oninput="invalidateLookup()"></div>
    <div style="align-self:end"><button type="button" onclick="lookup()">Look up game</button></div></div>
    
-   <div id="gameDetails" class="details hidden"></div></div>
+   <div id="gameDetails" class="details hidden"></div>
+   <div id="existingRequestPanel" class="panel hidden" role="status" aria-live="polite">
+     <h3>An existing request was found</h3>
+     <p id="existingRequestMessage"></p>
+     <div id="existingAccessWrap" class="grid hidden">
+       <div><label for="existingAccessEmail">Authorized club contact email</label><input id="existingAccessEmail" type="email" autocomplete="email"></div>
+       <div style="align-self:end"><button type="button" id="existingAccessButton" onclick="sendExistingAccessLink()">Email me a secure link</button></div>
+     </div>
+     <p class="muted">A secure link is emailed only to a representative already authorized for this request. This does not open a new request or change the schedule.</p>
+   </div></div>
  <div class="panel"><h2>3. Proposed new schedule</h2><div class="grid">
    <div><label for="date">Proposed date *</label><input id="date" type="date" oninput="resetConflict('initial')" onchange="checkConflicts('initial')"><button type="button" class="outline conflict-retry" id="initialRetryBtn" onclick="checkConflicts('initial')" disabled>Check / retry selected date</button></div>
    <div><label for="time">Proposed time *</label><select id="time"></select></div>
@@ -54,4 +63,4 @@
   <div class="actions"><button type="button" id="reviewApproveBtn" onclick="reviewAction('APPROVE')" disabled>Approve proposal</button><button type="button" class="secondary" id="reviewCounterBtn" onclick="reviewAction('COUNTER')" disabled>Send counterproposal</button><button class="danger" onclick="reviewAction('REJECT')">Reject request</button></div></div>
 </section>
 </main>
-<script src="app-core.js"></script><script src="app-controls.js?v=10"></script><script src="app-form.js"></script><script src="app-conflicts.js?v=5"></script><script src="app-actions.js?v=14"></script></body></html>
+<script src="app-core.js"></script><script src="app-controls.js?v=10"></script><script src="app-form.js"></script><script src="app-conflicts.js?v=5"></script><script src="app-actions.js?v=15"></script></body></html>
