@@ -33,12 +33,11 @@ function renderExistingRequestNotice(game){
 function invalidateLookup(){
  // Changing the game number invalidates prior game data and its date check.
  ++lookupSerial;clearExistingRequestNotice();
- if(!gameData)return;
  gameData=null;
  resetConflict('initial');
  $('gameDetails').classList.add('hidden');
 }
-async function lookup(){const serial=++lookupSerial;clearExistingRequestNotice();clearStatus();gameData=null;resetConflict('initial');try{const result=await call('findGame',$('game').value);
+async function lookup(){const serial=++lookupSerial;clearExistingRequestNotice();clearStatus();gameData=null;$('gameDetails').classList.add('hidden');resetConflict('initial');try{const result=await call('findGame',$('game').value);
  if(serial!==lookupSerial)return;
  gameData=result;renderGame($('gameDetails'),gameData);
  if(gameData.existingRequest){renderExistingRequestNotice(gameData);updateConflictActions('initial');return;}
