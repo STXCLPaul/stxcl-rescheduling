@@ -56,8 +56,8 @@ async function lookup(){clearStatus();resetConflict('initial');gameData=null;app
    gameData=found;renderGame($('gameDetails'),gameData);
    applyExistingRequestState(gameData.existingRequest||null);
    if(gameData.existingRequest)return;
-   const d=toIso(gameData.date);$('date').min=gameData.deadlinePolicyActive?followingDayIso(d):'';
-   const initialDate=gameData.deadlinePolicyActive?'':d;
+   const d=toIso(gameData.date);$('date').min=followingDayIso(d);
+   const initialDate=''; // A new request must propose a future date, never the existing game date.
    await setProposal('',{date:initialDate,time:gameData.time,complex:gameData.complex,field:gameData.field});
    updateConflictActions('initial');
  }catch(e){gameData=null;$('gameDetails').classList.add('hidden');applyExistingRequestState(null);error(e.message);}
@@ -77,7 +77,12 @@ async function submitInitial(){clearStatus();if(!gameData){error('Look up the ga
  catch(e){error(e.message);}}
 async function loadReview(){try{reviewData=await call('getReview',RID,TOKEN);$('reviewMeta').textContent='Request '+reviewData.id+' | '+reviewData.status+' | You are reviewing as '+reviewData.actorEmail;
  renderGame($('reviewGame'),reviewData.game);
- $('reviewDate').min=reviewData.deadlinePolicyActive?followingDayIso(toIso(reviewData.game.date)):'';
+ $('reviewDate').min=(reviewData.deadlinePolicyActive||reviewData.revisionPolicyActive)?followingDayIso(toIso(reviewData.game.date)):'';
+ const amendment=reviewData.amendmentOnly===true;
+ $('revisionAmendmentHint').classList.toggle('hidden',!amendment);
+ $('reviewApproveBtn').classList.toggle('hidden',amendment);
+ $('reviewRejectBtn').classList.toggle('hidden',amendment);
+ $('reviewCounterBtn').textContent=amendment?'Propose revised terms':'Send counterproposal';
  await setProposal('review',reviewData.proposal);await checkConflicts('review',true);
  if(reviewData.actorRole==='REQUESTOR'){$('reviewName').value=reviewData.requestorName||'';$('reviewRole').value=reviewData.requestorRole||'';}}
  catch(e){$('review').classList.add('hidden');error(e.message);}}
@@ -88,6 +93,12 @@ function proposalChangedFromReceived(){
  return ['date','time','complex','field'].some(key=>String(current[key]??'').trim()!==String(original[key]??'').trim());
 }
 async function reviewAction(action){clearStatus();if(!reviewData)return;
+ if(reviewData.amendmentOnly===true && action!=='COUNTER'){
+  error('This secure revision link is for proposing new terms only. The other club must approve the revision.');return;
+ }
+ if(reviewData.amendmentOnly===true && action==='COUNTER' && !proposalChangedFromReceived()){
+  error('Change at least one of the four proposed schedule fields before submitting revised terms.');return;
+ }
  const representativeName=$('reviewName').value.trim(),representativeRole=$('reviewRole').value;
  if(!representativeName||!representativeRole){error('Enter your full name and role before responding to this request.');return;}
  if(action!=='REJECT'&&!$('review_rainout').checked){error('You must certify that this game was rained out and is eligible for rainout rescheduling under STXCL policy.');return;}
@@ -98,7 +109,7 @@ async function reviewAction(action){clearStatus();if(!reviewData)return;
  }
  if(action!=='REJECT'&&!validateConflictAction('review'))return;
  if(action==='REJECT'){if(!confirm('Reject and close this rescheduling request?'))return;}
- else if(!confirm(action==='APPROVE'?'Approve this exact proposal and forward it to STXCL for review?':'Send these four proposed scheduling values back to the other club?'))return;
+ else if(!confirm(action==='APPROVE'?'Approve this exact proposal and forward it to STXCL for review?':reviewData.amendmentOnly?'Send revised terms to the other club for fresh approval?':'Send these four proposed scheduling values back to the other club?'))return;
  try{const out=await call('actOnRequest',{id:RID,token:TOKEN,action,representativeName,representativeRole,proposal:action==='REJECT'?null:proposal('review'),certs:certs('review'),doubleHeaderAcknowledged:conflictAcknowledged('review')});
  $('review').classList.add('hidden');success('Request '+out.id+' updated: '+out.status+'. This link is now closed.');showCompletedActions();}
  catch(e){error(e.message);}}
