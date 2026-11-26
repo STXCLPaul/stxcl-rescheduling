@@ -13,11 +13,12 @@ function conflictGame(prefix){return prefix==='review'?reviewData?.game:gameData
 function conflictDate(prefix){return $(prefix==='review'?'reviewDate':'date').value;}
 function deadlineDateInvalid(prefix){
  const game=conflictGame(prefix);
- const protectedRequest=prefix==='review'?!!reviewData?.deadlinePolicyActive:!!gameData?.deadlinePolicyActive;
+ const protectedRequest=prefix==='review'?!!(reviewData?.deadlinePolicyActive||reviewData?.revisionPolicyActive):true;
  const old=game?toIso(game.date):'';
  return !!(protectedRequest && old && conflictDate(prefix) && conflictDate(prefix)<=old);
 }
 function conflictCheckReady(prefix){
+ if(prefix==='initial'&&gameData?.existingRequest)return false;
  const state=conflictState[prefix],game=conflictGame(prefix),date=conflictDate(prefix);
  if(deadlineDateInvalid(prefix))return false;
  if(!state||!game||!date||conflictInFlight[prefix]||state.date!==date||
@@ -29,9 +30,9 @@ function conflictCheckReady(prefix){
 function updateConflictActions(prefix){
  const ready=conflictCheckReady(prefix);
  const buttons=prefix==='review'?['reviewApproveBtn','reviewCounterBtn']:['submitInitialBtn'];
- buttons.forEach(id=>{const button=$(id);if(button)button.disabled=!ready;});
+ buttons.forEach(id=>{const button=$(id);if(button)button.disabled=!ready||(id==='reviewApproveBtn'&&reviewData?.amendmentOnly===true);});
  const retry=$(prefix==='review'?'reviewRetryBtn':'initialRetryBtn');
- if(retry)retry.disabled=!!conflictInFlight[prefix]||!conflictGame(prefix)||!conflictDate(prefix);
+ if(retry)retry.disabled=!!conflictInFlight[prefix]||!conflictGame(prefix)||!conflictDate(prefix)||(prefix==='initial'&&!!gameData?.existingRequest);
 }
 function conflictBox(prefix){return $(prefix==='review'?'reviewConflict':'initialConflict');}
 function conflictAck(prefix){return $(prefix==='review'?'reviewConflictAck':'initialConflictAck');}
@@ -75,6 +76,7 @@ function renderConflict(prefix,result){
  }
 }
 async function checkConflicts(prefix,quiet=false){
+ if(prefix==='initial'&&gameData?.existingRequest){resetConflict(prefix);return null;}
  const game=conflictGame(prefix);
  const date=conflictDate(prefix);
  if(!game||!date){resetConflict(prefix);return null;}
